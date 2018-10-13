@@ -12,10 +12,11 @@ class Loss:
 class MSE(Loss):
     
     def forward(self, y, ypred):
-        return 1/2 * ((y - ypred) ** 2).mean()
+        return ((y - ypred) ** 2).mean()
     
     def backward(self, y, ypred):
-        return ypred - y
+        res = y - ypred
+        return res
     
 class Hinge(Loss):
     

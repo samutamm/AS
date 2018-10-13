@@ -3,7 +3,7 @@ import torch
 from torchvision import datasets, transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 
-def get_train_test_loaders(batch_size=64, label1 = 1, label2 = 3):
+def get_train_test_loaders(batch_size=64, label1 = 1, label2 = 3, binary=True):
     loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True, 
                               transform=transforms.Compose(
@@ -13,15 +13,16 @@ def get_train_test_loaders(batch_size=64, label1 = 1, label2 = 3):
         batch_size=batch_size, 
         shuffle=True
     )
+    
+    if binary:
+        labels = loader.dataset.train_labels
+        mask = (labels == label1) + (labels == label2) > 0
 
-    labels = loader.dataset.train_labels
-    mask = (labels == label1) + (labels == label2) > 0
+        loader.dataset.train_data = loader.dataset.train_data[mask]
+        loader.dataset.train_labels = loader.dataset.train_labels[mask]
 
-    loader.dataset.train_data = loader.dataset.train_data[mask]
-    loader.dataset.train_labels = loader.dataset.train_labels[mask]
-
-    labels = torch.where(loader.dataset.train_labels == label1, torch.ones(1), -torch.ones(1))
-    loader.dataset.train_labels = labels
+        labels = torch.where(loader.dataset.train_labels == label1, torch.ones(1), -torch.ones(1))
+        loader.dataset.train_labels = labels
 
     full_dataset = loader.dataset.train_data
     N = full_dataset.size()[0]
