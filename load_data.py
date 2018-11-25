@@ -26,14 +26,21 @@ def get_train_test_loaders(batch_size=64, label1 = 1, label2 = 3, binary=True):
 
     full_dataset = loader.dataset.train_data
     N = full_dataset.size()[0]
-    train_size = int(0.8 * N)
-    test_size = N - train_size
-    train_indices, test_indices = torch.utils.data.random_split(full_dataset, [train_size, test_size])
+    train_size = int(0.7 * N)
+    val_size = int(0.2 * N)
+    test_size = N - train_size - val_size
+    train_indices, val_indices, test_indices = torch.utils.data.random_split(full_dataset, [train_size, val_size, test_size])
 
     train_loader = torch.utils.data.DataLoader(
         loader.dataset, 
         batch_size=batch_size, 
         sampler=SubsetRandomSampler(train_indices.indices)
+    )
+    
+    val_loader = torch.utils.data.DataLoader(
+        loader.dataset, 
+        batch_size=batch_size, 
+        sampler=SubsetRandomSampler(val_indices.indices)
     )
 
     test_loader = torch.utils.data.DataLoader(
@@ -42,4 +49,4 @@ def get_train_test_loaders(batch_size=64, label1 = 1, label2 = 3, binary=True):
         sampler=SubsetRandomSampler(test_indices.indices)
     )
     
-    return train_loader, test_loader, train_size, test_size
+    return train_loader, val_loader, test_loader, train_size, val_size, test_size
