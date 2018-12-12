@@ -44,7 +44,7 @@ class CharDataset(Dataset):
         Charge un fichier data_file tenseur 1D d'entiers et le decoupe en sequences de longueur seq_length. Vocab_file est un dictionnaire
         de characteres vers entier.
     """
- 
+
     def __init__(self,data_file,vocab_file,seq_length):
         self.data_file = data_file
         self.vocab_file = vocab_file
@@ -52,7 +52,7 @@ class CharDataset(Dataset):
         self.data = torch.load(data_file)
         self.vocab = torch.load(vocab_file)
         self.vocab_map = dict(zip(self.vocab.values(),self.vocab.keys()))
-        self.nb_samples = self.data.size()[0]//self.seq_length 
+        self.nb_samples = self.data.size()[0]//self.seq_length
         print('cutting off end of data so that the batches/sequences divide evenly')
         self.data = self.data[:(self.seq_length*self.nb_samples+1)]
         self.vocab_size = len(self.vocab)
